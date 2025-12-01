@@ -1,4 +1,4 @@
-## TCNSFormer: Dynamic Global-LocalTransformer for Multivariate Time Series Classification
+## TCNSFormer: Dynamic Global-Local Transformer for Multivariate Time Series Classification
 
 ### Install dependencies
 ```

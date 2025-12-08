@@ -26,7 +26,7 @@ Here, [dataset_pos], [num_shapelet],[num_shapelet] and [num_blocks] can be selec
 | EthanolConcentration      | 9             | 200           | 100            | 2            |
 | FaceDetection             | 10            | 10            | 10             | 3            |
 | FingerMovements           | 11            | 20            | 30             | 2            |
-| HandMovementDirection     | 12            | 200           | 100            | 3            |
+| HandMovementDirection     | 12            | 200           | 100            | 2            |
 | Handwriting               | 13            | 20            | 30             | 2            |   
 | Heartbeat                 | 14            | 200           | 100            | 2            |
 | InsectWingbeat            | 15            | 10            | 30             | 3            |

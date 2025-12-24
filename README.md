@@ -7,7 +7,7 @@ pip install -r requirements.txt
 
 ### Model training
 ```
-python main.py --dataset_pos=[dataset_pos] --num_shapelet=[num_shapelet] --window_size=[window_size]
+python main.py --dataset_pos=[dataset_pos] --num_shapelet=[num_shapelet] --window_size=[window_size] --num_blocks=[num_blocks] --num_layers=[num_layers]
 ```
 
 Here, [dataset_pos], [num_shapelet],[num_shapelet] and [num_blocks] can be selected as follows:

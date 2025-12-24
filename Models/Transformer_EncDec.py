@@ -24,7 +24,7 @@ class ConvLayer(nn.Module):
         x = x.transpose(1, 2)
         return x
 
-class ShapeAttention(nn.Module):
+class ST_Attention(nn.Module):
     def __init__(self, emb_size, num_heads, dropout):
         super().__init__()
         self.num_heads = num_heads
@@ -47,7 +47,7 @@ class ShapeAttention(nn.Module):
         # q = self.query(q).reshape(batch_size, seq_len, self.num_heads, -1).transpose(1, 2)
         # k,v,q shape = (batch_size, num_heads, seq_len, d_head)
         batch_size = q.size(0)
-        query = self.query(q)  
+        q = self.query(q)  
         q=q.view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
         k= self.key(x).view(batch_size, -1, self.num_heads, self.d_k).permute(0, 2, 3, 1)
         v= self.value(x).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
@@ -127,3 +127,43 @@ class Encoder(nn.Module):
 
         return x,attention_weights_all_layers
 
+import torch
+import torch.nn as nn
+from einops import rearrange
+import torch
+import torch.nn as nn
+import torch
+import torch.nn as nn
+
+class Flash_ST_Attention(nn.Module):
+    def __init__(self, emb_size, num_heads, dropout):
+        super().__init__()
+        self.num_heads = num_heads
+        self.d_k = emb_size // num_heads
+        self.query = nn.Linear(emb_size, emb_size, bias=False)
+        self.key = nn.Linear(emb_size, emb_size, bias=False)
+        self.value = nn.Linear(emb_size, emb_size, bias=False)
+        self.dropout = nn.Dropout(dropout)
+        self.to_out = nn.LayerNorm(emb_size)
+
+    def forward(self, q, x):
+        batch_size = q.size(0)
+        
+        # 线性投影 + 维度转换 (batch, seq_len, num_heads, d_k)
+        q = self.query(q).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
+        k = self.key(x).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
+        v = self.value(x).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
+        
+        # 使用 FlashAttention 计算
+        out = torch.nn.functional.scaled_dot_product_attention(
+            q, k, v,
+            dropout_p=self.dropout.p if self.training else 0.0,
+            is_causal=False
+        )
+        
+        # 拼接头 + 层归一化
+        out = out.transpose(1, 2).contiguous().view(batch_size, -1, self.d_k * self.num_heads)
+        out = self.to_out(out)
+        
+        # 返回两个值（第二个设为None，满足调用方期望）
+        return out, None

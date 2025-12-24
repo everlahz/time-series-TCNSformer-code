@@ -7,7 +7,7 @@ from Shapelet.auto_pisd import auto_piss_extractor
 from einops import rearrange, repeat
 from einops.layers.torch import Rearrange
 from torch.nn.utils import weight_norm
-from Models.Transformer_EncDec import Encoder, EncoderLayer,ShapeAttention
+from Models.Transformer_EncDec import Encoder, EncoderLayer, ST_Attention,Flash_ST_Attention
 import time
 
 class TCNBlock(nn.Module):  #TCN的块，可以在TCN中重复使用
@@ -189,7 +189,7 @@ class TCNSFormer(nn.Module):
         #print('暂停一下')
         #time.sleep(10000) # 暂停 10000秒
         # Merge Layer----------------------------------------------------------
-        self.encoder = Encoder([EncoderLayer( ShapeAttention(emb_size, num_heads, config['dropout']), #注意力机制
+        self.encoder = Encoder([EncoderLayer( ST_Attention(emb_size, num_heads, config['dropout']), #注意力机制
                                              128,   # 输入/隐藏层维度
                                              256,   # 前馈网络维度
                                              dropout=config['dropout'], # Dropout 概率
